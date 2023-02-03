@@ -41,6 +41,6 @@ protected:
 	glm::vec2 m_position{};
 	glm::vec2 m_velocity{};
 	glm::vec2 m_force{};
-	float m_mass = 10.0f;
+	float m_mass = 1.0f;
 };
 

@@ -37,22 +37,31 @@ void PhysicsWorld::Step(const float deltaTime)
 
 void PhysicsWorld::ResolveCollisions(const float deltaTime)
 {
-	std::vector<Collision> collisions;
+	std::vector<Manifold> collisions;
 	for (Object* const x : m_objectsRef)
 	{
 		for (Object* const y : m_objectsRef)
 		{
 			if (x == y)
 			{
-				break;
+				break; // same object
 			}
 
 			if (!x->GetCollider() || !y->GetCollider())
 			{
-				continue;
+				continue; // no collider present
 			}
 
-			//CollidedObject
+			glm::vec2 collisionPoint = x->GetCollider()->Collides(*y->GetCollider());
+			if (collisionPoint != NO_COLLISION)
+			{
+				collisions.emplace_back(Manifold{ x, y, 0.0f, collisionPoint });
+			}
 		}
+	}
+
+	for (SolverBase* SolverBase : m_SolverBases)
+	{
+		SolverBase->Solve(collisions, deltaTime);
 	}
 }

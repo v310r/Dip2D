@@ -10,13 +10,13 @@ CircleCollider::CircleCollider(const glm::vec2 position, const float radius)
 }
 
 
-bool CircleCollider::Collides(const RectangleCollider& other) const
+glm::vec2 CircleCollider::Collides(const RectangleCollider& other) const
 {
 	return CollisionUtility::FindCollision(other, *this);
 }
 
-
-bool CircleCollider::Collides(const CircleCollider& other) const
+ 
+glm::vec2 CircleCollider::Collides(const CircleCollider& other) const
 {
 	return CollisionUtility::FindCollision(*this, other);
 }

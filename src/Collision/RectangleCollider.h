@@ -7,8 +7,8 @@ class RectangleCollider : public Collider
 public:
 	RectangleCollider(const glm::vec2 position, const glm::vec2 min, const glm::vec2 max);
 
-	virtual bool Collides(const RectangleCollider& other) const override;
-	virtual bool Collides(const CircleCollider& other) const override;
+	virtual glm::vec2 Collides(const RectangleCollider& other) const override;
+	virtual glm::vec2 Collides(const CircleCollider& other) const override;
 
 private:
 	friend class CollisionUtility;
