@@ -6,6 +6,8 @@ Application::Application() : m_window("Rigid body simulation", sf::Vector2u(800,
 	m_context.SetWindow(&m_window);
 	m_context.SetEventManager(m_window.GetEventManager());
 	m_stateManager.SwitchTo(StateType::Simulation);
+
+	//m_window.SetFramerateLimit(10);
 }
 
 Application::~Application()
@@ -17,10 +19,9 @@ void Application::HandleInput()
 
 }
 
-void Application::Update()
+void Application::Update(const float deltaTime)
 {
 	m_window.Update();
-	const sf::Time deltaTime = m_clock.getElapsedTime();
 	m_stateManager.Update(deltaTime);
 }
 
@@ -39,5 +40,9 @@ Window& Application::GetWindow()
 void Application::PostUpdate()
 {
 	m_stateManager.ProcessRequests();
-	m_clock.restart();
+}
+
+sf::Time Application::RestartClock()
+{
+	return m_clock.restart();
 }

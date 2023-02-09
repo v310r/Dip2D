@@ -8,12 +8,17 @@ RectangleCollider::RectangleCollider(const glm::vec2 position, const glm::vec2 m
 
 }
 
-glm::vec2 RectangleCollider::Collides(const RectangleCollider& other) const
+CollisionManifold RectangleCollider::Collides(const RectangleCollider& other) const
 {
-	return CollisionUtility::FindCollision(*this, other);
+	return CollisionUtility::GetCollisionManifold(*this, other);
 }
 
-glm::vec2 RectangleCollider::Collides(const CircleCollider& other) const
+CollisionManifold RectangleCollider::Collides(const CircleCollider& other) const
 {
-	return CollisionUtility::FindCollision(*this, other);
+	return CollisionUtility::GetCollisionManifold(*this, other);
+}
+
+CollisionManifold RectangleCollider::Collides(const Collider& other) const
+{
+	return other.Collides(*this);
 }

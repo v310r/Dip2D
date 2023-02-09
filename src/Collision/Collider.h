@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "Manifold.h"
+#include "CollisionManifold.h"
 
 class RectangleCollider;
 class CircleCollider;
@@ -14,14 +14,11 @@ public:
 
 	virtual ~Collider() {}
 
-	virtual glm::vec2 Collides(const Collider& otherCollider) const
-	{
-		return otherCollider.Collides(*this);
-	}
+	virtual CollisionManifold Collides(const Collider& other) const = 0;
 
-	virtual glm::vec2 Collides(const RectangleCollider& other) const = 0;
+	virtual CollisionManifold Collides(const RectangleCollider& other) const = 0;
 
-	virtual glm::vec2 Collides(const CircleCollider& other) const = 0;
+	virtual CollisionManifold Collides(const CircleCollider& other) const = 0;
 	
 	struct
 	{

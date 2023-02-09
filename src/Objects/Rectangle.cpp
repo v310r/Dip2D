@@ -1,10 +1,21 @@
 #include "Rectangle.h"
 #include "../Collision/RectangleCollider.h"
+#include "SFML/Graphics/Color.hpp"
+
 
 Rectangle::Rectangle(const glm::vec2 position) : Object(position)
 {
-	recShape.setSize({ 300.0f, 40.0f });
-	const glm::vec2 min = { m_position.x - recShape.getSize().x, m_position.y - recShape.getSize().y };
-	const glm::vec2 max = { m_position.x + recShape.getSize().x, m_position.y + recShape.getSize().y };
-	Collider* collider = new RectangleCollider(position, min, max);
+	m_recShape.setSize({ 300.0f, 40.0f });
+	m_recShape.setOrigin(m_recShape.getSize().x / 2.0f, m_recShape.getSize().y / 2.0f);
+	m_recShape.setPosition(position.x, position.y);
+	m_recShape.setFillColor(sf::Color::Magenta);
+	const glm::vec2 min = { m_position.x - m_recShape.getSize().x / 2.0f, m_position.y - m_recShape.getSize().y / 2.0f };
+	const glm::vec2 max = { m_position.x + m_recShape.getSize().x / 2.0f, m_position.y + m_recShape.getSize().y / 2.0f };
+
+	m_collider.reset(new RectangleCollider(position, min, max));
+}
+
+void Rectangle::Draw(sf::RenderWindow& window)
+{
+	window.draw(m_recShape);
 }

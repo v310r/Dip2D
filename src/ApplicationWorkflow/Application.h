@@ -14,13 +14,15 @@ public:
 
 	void HandleInput();
 
-	void Update();
+	void Update(const float deltaTime);
 
 	void Render();
 
 	Window& GetWindow();
 
 	void PostUpdate();
+
+	sf::Time RestartClock();
 
 private:
 

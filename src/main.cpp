@@ -12,7 +12,8 @@ int main()
 
     while (app->GetWindow().IsDone() == false)
     {
-        app->Update();
+        const sf::Time deltaTime = app->RestartClock();
+        app->Update(deltaTime.asSeconds());
         app->Render();
         app->PostUpdate();
     }

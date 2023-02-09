@@ -40,13 +40,13 @@ void IntroState::Deactivate()
 {
 }
 
-void IntroState::Update(const sf::Time& deltaTime)
+void IntroState::Update(const float deltaTime)
 {
 	if (m_timePassed < 5.0f)
 	{
-		m_timePassed += deltaTime.asSeconds() * 50;
+		m_timePassed += deltaTime * 50;
 		m_introSprite.setPosition(m_introSprite.getPosition().x,
-			m_introSprite.getPosition().y + (48 * 50 * deltaTime.asSeconds()));
+			m_introSprite.getPosition().y + (48 * 50 * deltaTime));
 	}
 }
 

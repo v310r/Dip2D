@@ -39,7 +39,7 @@ void PausedState::Deactivate()
 {
 }
 
-void PausedState::Update(const sf::Time& deltaTime)
+void PausedState::Update(const float deltaTime)
 {
 }
 

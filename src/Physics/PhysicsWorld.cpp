@@ -1,4 +1,6 @@
 #include "PhysicsWorld.h"
+#include "iostream"
+
 
 void PhysicsWorld::AddObject(Object* const object)
 {
@@ -22,46 +24,60 @@ void PhysicsWorld::RemoveObject(Object* const object)
 
 void PhysicsWorld::Step(const float deltaTime)
 {
-	//if (m_objectsRef.size() == 0) return;
+	if (m_objectsRef.size() == 0)
+	{
+		//m_SimulationTime.restart();
+		return;
+	}
 
+	const float damping = 0.98f; // simulates air friction
 	for (Object* const obj : m_objectsRef)
 	{
-		obj->SetForce(obj->GetForce() + obj->GetMass() * m_gravity);
+		if (obj->IsStatic())
+		{
+			continue;
+		}
 
-		obj->SetVelocity(obj->GetVelocity() + obj->GetForce() / obj->GetMass() * deltaTime);
-		obj->SetPosition(obj->GetPosition() + obj->GetVelocity());
+		//std::cout << "obj position y: " << obj->GetPosition().y << " time spent: " << m_SimulationTime.getElapsedTime().asSeconds() << "s\n";
+		obj->AddToNetForce(obj->GetMass() * m_gravity); // gravity force component
 
-		obj->SetForce({ 0.0f, 0.0f });
+		const glm::vec2 acceleration = obj->GetNetForce() * obj->GetInvMass();
+		obj->AddVelocity(acceleration * deltaTime);
+		//obj->ApplyLinearDamping(damping);
+		const glm::vec2 offset = obj->GetVelocity() * deltaTime;
+		obj->AddToPosition(offset);
+
+		obj->SetNetForce({ 0.0f, 0.0f });
 	}
 }
 
 void PhysicsWorld::ResolveCollisions(const float deltaTime)
 {
-	std::vector<Manifold> collisions;
-	for (Object* const x : m_objectsRef)
+	std::vector<Collision> collisions;
+	for (Object* const a : m_objectsRef)
 	{
-		for (Object* const y : m_objectsRef)
+		for (Object* const b : m_objectsRef)
 		{
-			if (x == y)
+			if (a == b)
 			{
 				break; // same object
 			}
 
-			if (!x->GetCollider() || !y->GetCollider())
+			if (!a->GetCollider() || !b->GetCollider())
 			{
 				continue; // no collider present
 			}
 
-			glm::vec2 collisionPoint = x->GetCollider()->Collides(*y->GetCollider());
-			if (collisionPoint != NO_COLLISION)
+			CollisionManifold manifold = a->GetCollider()->Collides(*b->GetCollider());
+			if (manifold.IsColliding)
 			{
-				collisions.emplace_back(Manifold{ x, y, 0.0f, collisionPoint });
+				collisions.emplace_back(Collision{ a, b, manifold });
 			}
 		}
 	}
 
-	for (SolverBase* SolverBase : m_SolverBases)
+	for (SolverBase* solver : m_solvers)
 	{
-		SolverBase->Solve(collisions, deltaTime);
+		solver->Solve(collisions, deltaTime);
 	}
 }

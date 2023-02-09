@@ -16,7 +16,7 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 
-	virtual void Update(const sf::Time& deltaTime) override;
+	virtual void Update(const float deltaTime) override;
 	virtual void Draw() override;
 
 	void GoToMainMenu(EventDetails* details);
@@ -29,5 +29,6 @@ private:
 	std::unique_ptr<PhysicsWorld> m_physicsWorld;
 
 	std::vector<Object*> m_objects;
+
 };
 

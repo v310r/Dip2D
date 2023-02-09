@@ -3,42 +3,60 @@
 #include "CircleCollider.h"
 #include "CollisionUtility.h"
 
-
-glm::vec2 CollisionUtility::FindCollision(const RectangleCollider& rectangle, const CircleCollider& circle)
+inline bool CMP(const float x, const float y)
 {
+	return fabsf(x - y) <= FLT_EPSILON * fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y)));
+}
+
+CollisionManifold CollisionUtility::GetCollisionManifold(const RectangleCollider& rectangle, const CircleCollider& circle)
+{
+	CollisionManifold result;
+
 	const float halfWidth = (rectangle.Max.x - rectangle.Min.x) / 2;
 	const float halfHeight = (rectangle.Max.y - rectangle.Min.y) / 2;
 
 	const glm::vec2 absolutDistance = circle.Position - rectangle.Position;
 	const float clampedX = std::clamp(absolutDistance.x, -halfWidth, halfWidth);
 	const float clampedY = std::clamp(absolutDistance.y, -halfHeight, halfHeight);
-	const glm::vec2 recSurfacePoint = rectangle.Position + glm::vec2{ clampedX , clampedX };
+	const glm::vec2 closestPoint = rectangle.Position + glm::vec2{ clampedX , clampedY };
 
-	const float distance = std::sqrt(std::powf(circle.Position.x - recSurfacePoint.x, 2)
-		+ std::powf(circle.Position.y - recSurfacePoint.y, 2));	
+	const glm::vec2 distanceVec = circle.Position - closestPoint;
+	const float distance = glm::length(distanceVec);
 
-	if (distance <= circle.Radius)
+	if (distance > circle.Radius)
 	{
-		return recSurfacePoint;
+		return result;
 	}
 
-	return NO_COLLISION;
+	glm::vec2 normal;
+	if (CMP(distance, 0.0f))
+	{
+		const glm::vec2 revertedDistanceVec = closestPoint - rectangle.Position;
+		const float newDistance = glm::length(revertedDistanceVec);
+		if (CMP(newDistance, 0.0f))
+		{
+			return result;
+		}
 
-	//sf::Vector2f recSide;
-	//if (sphere.Position.x < rectangle.Min.x) recSide.x = rectangle.Min.x;
-	//else if (sphere.Position.x >= rectangle.Max.x) recSide.x = rectangle.Max.x;
+		normal = glm::normalize(revertedDistanceVec);
+	}
+	else
+	{
+		normal = glm::normalize(distanceVec);
+	}
 
-	//if (sphere.Position.y < rectangle.Min.y) recSide.y = rectangle.Min.y;
-	//else if (sphere.Position.y >= rectangle.Max.y) recSide.y = rectangle.Max.y;
+	const glm::vec2 outsidePoint = circle.Position - normal * circle.Radius;
+	const float doublePenetrationDistance = glm::length(closestPoint - outsidePoint);
 
-	//const float distance = std::sqrt(std::powf(sphere.Position.x - recSide.x, 2)
-	//	+ std::powf(sphere.Position.y - recSide.y, 2));
+	result.IsColliding = true;
+	result.contacts.emplace_back(closestPoint + (outsidePoint - closestPoint) * 0.5f);
+	result.normal = normal;
+	result.PenetrationDepth = doublePenetrationDistance * 0.5f;
 
-
-	//return distance <= sphere.Radius;
+	return result;
 }
 
-glm::vec2 CollisionUtility::FindCollision(const RectangleCollider& rectangle1, const RectangleCollider& rectangle2)
+CollisionManifold CollisionUtility::GetCollisionManifold(const RectangleCollider& rectangle1, const RectangleCollider& rectangle2)
 {
 	//if (rectangle1.Min.x <= rectangle2.Max.x &&
 	//	rectangle1.Max.x >= rectangle2.Min.x &&
@@ -48,18 +66,30 @@ glm::vec2 CollisionUtility::FindCollision(const RectangleCollider& rectangle1, c
 
 	//}
 
-	return NO_COLLISION;
+	return CollisionManifold();
 }
 
-glm::vec2 CollisionUtility::FindCollision(const CircleCollider& sphere1, const CircleCollider& sphere2)
+CollisionManifold CollisionUtility::GetCollisionManifold(const CircleCollider& circle1, const CircleCollider& circle2)
 {
-	const float distance = std::sqrt(std::powf(sphere1.Position.x - sphere2.Position.x, 2)
-		+ std::powf(sphere2.Position.y - sphere2.Position.y, 2));
+	CollisionManifold result;
 
-	if (distance <= sphere1.Radius + sphere2.Radius)
+	const glm::vec2 distanceVec = (circle2.Position - circle1.Position);
+	const float combinedRadius = circle1.Radius + circle2.Radius;
+	const float distance = glm::length(distanceVec);
+	if (distance > combinedRadius || distance == 0.0f)
 	{
-		return glm::vec2{ (sphere1.Position - sphere2.Position) / 2.0f };
+		return result;
 	}
 
-	return NO_COLLISION;
+	const glm::vec2 normal = glm::normalize(distanceVec);
+
+	result.normal = normal;
+	result.IsColliding = true;
+	result.PenetrationDepth = (distance - circle1.Radius + circle2.Radius) * 0.5f;
+
+	const float distanceToIntersectionPoint = circle1.Radius - result.PenetrationDepth;
+	const glm::vec2 contactPoint = circle1.Position + result.normal * distanceToIntersectionPoint;
+	result.contacts.emplace_back(contactPoint);
+
+	return result;
 }

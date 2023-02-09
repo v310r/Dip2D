@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Manifold.h"
+#include "CollisionManifold.h"
 
 class RectangleCollider;
 class CircleCollider;
@@ -8,10 +8,10 @@ class CircleCollider;
 class CollisionUtility
 {
 public:
-	static glm::vec2 FindCollision(const RectangleCollider& rectangle, const CircleCollider& sphere);
+	static CollisionManifold GetCollisionManifold(const RectangleCollider& rectangle, const CircleCollider& sphere);
 
 	// deprecated
-	static glm::vec2 FindCollision(const RectangleCollider& rectangle1, const RectangleCollider& rectangle2);
+	static CollisionManifold GetCollisionManifold(const RectangleCollider& rectangle1, const RectangleCollider& rectangle2);
 
-	static glm::vec2 FindCollision(const CircleCollider& sphere1, const CircleCollider& sphere2);
+	static CollisionManifold GetCollisionManifold(const CircleCollider& circle1, const CircleCollider& circle2);
 };

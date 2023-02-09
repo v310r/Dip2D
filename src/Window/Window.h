@@ -31,10 +31,9 @@ public:
 
 	void Draw(sf::Drawable& drawable);
 
-	sf::RenderWindow* GetRenderWindow()
-	{
-		return &m_window;
-	}
+	sf::RenderWindow* GetRenderWindow() { return &m_window; }
+
+	void SetFramerateLimit(unsigned int value) { m_window.setFramerateLimit(value); }
 
 	bool IsFocused();
 

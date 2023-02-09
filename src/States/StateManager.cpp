@@ -21,7 +21,7 @@ StateManager::~StateManager()
 	}
 }
 
-void StateManager::Update(const sf::Time& deltaTime)
+void StateManager::Update(const float deltaTime)
 {
 	if (m_states.empty())
 		return;

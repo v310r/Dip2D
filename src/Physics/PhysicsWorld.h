@@ -26,8 +26,10 @@ public:
 private:
 	const std::vector<Object*>& m_objectsRef;
 	
-	std::vector<SolverBase*> m_SolverBases;
+	std::vector<SolverBase*> m_solvers;
 
 	const glm::vec2 m_gravity = { 0.0f, 9.81f };
+
+	//sf::Clock m_SimulationTime;
 };
 
