@@ -2,6 +2,14 @@
 #include "iostream"
 
 
+PhysicsWorld::~PhysicsWorld()
+{
+	for (SolverBase* solver : m_solvers)
+	{
+		delete solver;
+	}
+}
+
 void PhysicsWorld::AddObject(Object* const object)
 {
 	//if (object)
@@ -20,6 +28,11 @@ void PhysicsWorld::RemoveObject(Object* const object)
 	//		m_objectsRef.erase(it);
 	//	}
 	//}
+}
+
+void PhysicsWorld::AddSolver(SolverBase* const object)
+{
+	m_solvers.emplace_back(object);
 }
 
 void PhysicsWorld::Step(const float deltaTime)

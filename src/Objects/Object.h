@@ -32,6 +32,10 @@ public:
 
 	void AddLinearImpulse(const glm::vec2 impulse) { m_velocity += impulse; }
 
+	float GetRestitution() { return m_restitution; }
+
+	float GetFriction() { return m_friction; }
+
 	void SetTexture(const sf::Texture texture) { m_texture = texture; }
 	sf::Sprite GetSprite() { return m_sprite; }
 

@@ -3,10 +3,6 @@
 #include "CircleCollider.h"
 #include "CollisionUtility.h"
 
-inline bool CMP(const float x, const float y)
-{
-	return fabsf(x - y) <= FLT_EPSILON * fmaxf(1.0f, fmaxf(fabsf(x), fabsf(y)));
-}
 
 CollisionManifold CollisionUtility::GetCollisionManifold(const RectangleCollider& rectangle, const CircleCollider& circle)
 {

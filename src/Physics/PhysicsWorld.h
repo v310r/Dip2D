@@ -13,11 +13,13 @@ public:
 	{
 	}
 
+	~PhysicsWorld();
+
 	void AddObject(Object* const object);
 	void RemoveObject(Object* const object);
 
-	void AddSolverBase(SolverBase* const object);
-	void RemoveSolverBase(SolverBase* const object);
+	void AddSolver(SolverBase* const object);
+	void RemoveSolver(SolverBase* const object);
 
 	void Step(const float deltaTime);
 

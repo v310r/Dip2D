@@ -2,6 +2,7 @@
 #include "StateManager.h"
 #include "../Objects/Circle.h"
 #include "../Objects/Rectangle.h"
+#include "../Physics/ImpulseSolver.h"
 #include <iostream>
 
 
@@ -13,9 +14,12 @@ void SimulationState::OnCreate()
 	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::SpawnObjectAtMousePosition, this);
 
 	m_physicsWorld = std::make_unique<PhysicsWorld>(m_objects);
+	m_physicsWorld->AddSolver(new ImpulseSolver());
 
 	m_objects.push_back(new Rectangle({300, 400}));
 	m_objects[0]->SetDynamic(false);
+
+	
 }
 
 void SimulationState::OnDestroy()
@@ -50,7 +54,6 @@ void SimulationState::Draw()
 	for (Object* const obj : m_objects)
 	{
 		obj->Draw(*m_stateManager->GetContext()->GetWindow()->GetRenderWindow());
-		//m_stateManager->GetContext()->GetWindow()->GetRenderWindow()->draw(obj->GetSprite());
 	}
 }
 
@@ -68,10 +71,5 @@ void SimulationState::SpawnObjectAtMousePosition(EventDetails* details)
 {
 	glm::vec2 mousePos = details->GetMousePos();
 
-	//mousePos = { 100.0f, 100.0f };
-
 	m_objects.push_back(new Circle(mousePos, 10.0f));
-
-	//mousePos = { 100.0f, 140.0f };
-	//m_objects.push_back(new Circle(mousePos, 10.0f));
 }
