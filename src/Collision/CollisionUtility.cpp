@@ -81,7 +81,7 @@ CollisionManifold CollisionUtility::GetCollisionManifold(const CircleCollider& c
 
 	result.normal = normal;
 	result.IsColliding = true;
-	result.PenetrationDepth = (distance - circle1.Radius + circle2.Radius) * 0.5f;
+	result.PenetrationDepth = std::fabsf(distance - combinedRadius) * 0.5f;
 
 	const float distanceToIntersectionPoint = circle1.Radius - result.PenetrationDepth;
 	const glm::vec2 contactPoint = circle1.Position + result.normal * distanceToIntersectionPoint;

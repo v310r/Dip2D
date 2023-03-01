@@ -3,7 +3,7 @@
 #include "../Collision/CollisionUtility.h"
 #include <cmath>
 
-void ImpulseSolver::Solve(std::vector<Collision> collisions, float deltaTime)
+void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
 {
 	for (const Collision& collision : collisions)
 	{
@@ -19,14 +19,15 @@ void ImpulseSolver::Solve(std::vector<Collision> collisions, float deltaTime)
 		const glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
 
 		const glm::vec2 relativeVelocity = velocityB - velocityA;
-		const glm::vec2 relativeNormal = glm::normalize(collision.Manifold.normal);
-		if (glm::dot(relativeVelocity, relativeNormal) > 0.0f)
+		const glm::vec2 relativeNormal = collision.Manifold.normal;
+		const float directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
+		if (directionMagnitude <= 0.0f)
 		{
 			continue; // Moving away from each other? Do nothing!
 		}
 
 		const float e = std::fminf(collision.A->GetRestitution(), collision.B->GetRestitution());
-		float numerator = (-(1.0f + e) * glm::dot(relativeVelocity, relativeNormal));
+		float numerator = (-(1.0f + e) * directionMagnitude);
 		float j = numerator / invMassSum;
 		if (collision.Manifold.contacts.size() > 0 && j != 0.0f)
 		{
@@ -45,14 +46,17 @@ void ImpulseSolver::Solve(std::vector<Collision> collisions, float deltaTime)
 		}
 
 		//Friction
-		const glm::vec2 t = relativeVelocity - (relativeNormal * glm::dot(relativeVelocity, relativeNormal));
+		
+		//const glm::vec2 t = glm::dot(relativeVelocity, relativeNormal);
+
+		const glm::vec2 t = relativeVelocity - (relativeNormal * directionMagnitude);
 		if (CMP(glm::length(t), 0.0f))
 		{
-			return;
+			continue;
 		}
 		const glm::vec2 tNormalized = glm::normalize(t);
 
-		numerator = -glm::dot(relativeVelocity, t);
+		numerator = -glm::dot(relativeVelocity, tNormalized);
 		float jt = numerator / invMassSum;
 		if (collision.Manifold.contacts.size() > 0 && jt != 0.0f)
 		{
@@ -61,7 +65,7 @@ void ImpulseSolver::Solve(std::vector<Collision> collisions, float deltaTime)
 
 		if (CMP(jt, 0.0f))
 		{
-			return;
+			continue;
 		}
 
 		const float friction = std::sqrtf(collision.A->GetFriction() * collision.B->GetFriction());
@@ -74,14 +78,14 @@ void ImpulseSolver::Solve(std::vector<Collision> collisions, float deltaTime)
 			jt = -j * friction;
 		}
 
-		const glm::vec2 tangentImpulse = t * jt;
+		const glm::vec2 tangentImpulse = tNormalized * jt;
 		if (collision.A->IsDynamic())
 		{
-			collision.A->AddVelocity(-tangentImpulse * invMassA);
+			collision.A->AddVelocity(tangentImpulse * invMassA);
 		}
 		if (collision.B->IsDynamic())
 		{
-			collision.B->AddVelocity(tangentImpulse * invMassB);
+			collision.B->AddVelocity(-tangentImpulse * invMassB);
 		}
 	}
 }

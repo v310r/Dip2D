@@ -6,6 +6,6 @@
 class ImpulseSolver : public SolverBase
 {
 public:
-	virtual void Solve(std::vector<Collision> collisions, float deltaTime);
+	virtual void Solve(const std::vector<Collision>& collisions, float deltaTime);
 };
 

@@ -30,7 +30,7 @@ private:
 	
 	std::vector<SolverBase*> m_solvers;
 
-	const glm::vec2 m_gravity = { 0.0f, 9.81f };
+	const glm::vec2 m_gravity = { 0.0f, 198.1f };
 
 	//sf::Clock m_SimulationTime;
 };

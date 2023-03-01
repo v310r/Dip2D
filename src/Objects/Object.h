@@ -30,7 +30,11 @@ public:
 
 	float GetInvMass();
 
+	float GetInvInertia();
+
 	void AddLinearImpulse(const glm::vec2 impulse) { m_velocity += impulse; }
+
+	virtual void AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse) = 0;
 
 	float GetRestitution() { return m_restitution; }
 
@@ -58,9 +62,12 @@ protected:
 
 	glm::vec2 m_position{};
 	glm::vec2 m_velocity{};
+	glm::vec2 m_angularVelocity{};
 	glm::vec2 m_netForce{};
+	glm::vec2 m_netTorque{};
 	float m_mass = 1.0f;
+	float m_inertia{};
 	float m_restitution = 0.5f;
-	float m_friction = 0.5f;
+	float m_friction = 0.1f;
 };
 

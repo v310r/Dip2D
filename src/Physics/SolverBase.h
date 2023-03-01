@@ -6,6 +6,6 @@
 class SolverBase
 {
 public:
-	virtual void Solve(std::vector<Collision> collisions, float deltaTime) = 0;
+	virtual void Solve(const std::vector<Collision>& collisions, float deltaTime) = 0;
 };
 

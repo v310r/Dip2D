@@ -27,6 +27,16 @@ float Object::GetInvMass()
 		return 0.0f;
 	}
 
-	return 1 / m_mass;
+	return 1.0f / m_mass;
+}
+
+float Object::GetInvInertia()
+{
+	if (m_inertia == 0.0f)
+	{
+		return 0.0f;
+	}
+
+	return 1.0f / m_inertia;
 }
 

@@ -3,6 +3,7 @@
 #include "../Objects/Circle.h"
 #include "../Objects/Rectangle.h"
 #include "../Physics/ImpulseSolver.h"
+#include "../Physics/PositionSolver.h"
 #include <iostream>
 
 
@@ -15,6 +16,7 @@ void SimulationState::OnCreate()
 
 	m_physicsWorld = std::make_unique<PhysicsWorld>(m_objects);
 	m_physicsWorld->AddSolver(new ImpulseSolver());
+	m_physicsWorld->AddSolver(new PositionSolver());
 
 	m_objects.push_back(new Rectangle({300, 400}));
 	m_objects[0]->SetDynamic(false);
@@ -45,8 +47,26 @@ void SimulationState::Deactivate()
 
 void SimulationState::Update(const float deltaTime)
 {
-	m_physicsWorld->Step(deltaTime * 5.0f);
-	m_physicsWorld->ResolveCollisions(deltaTime * 5.0f);
+	//m_physicsWorld->Step(deltaTime * 5.0f);
+	//m_physicsWorld->ResolveCollisions(deltaTime * 5.0f);
+
+	m_physicsWorld->Step(deltaTime);
+	m_physicsWorld->ResolveCollisions(deltaTime);
+
+	std::cout << "Objects num: " << m_objects.size() << "\n";
+	for (auto it = m_objects.begin(); it != m_objects.end();)
+	{
+		if ((*it)->GetPosition().y >= 2000.0f)
+		{
+			Object* temp = *it;
+			it = m_objects.erase(it);
+			delete temp;
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 void SimulationState::Draw()

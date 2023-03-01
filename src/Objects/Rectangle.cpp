@@ -15,6 +15,10 @@ Rectangle::Rectangle(const glm::vec2 position) : Object(position)
 	m_collider.reset(new RectangleCollider(position, min, max));
 }
 
+void Rectangle::AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse)
+{
+}
+
 void Rectangle::Draw(sf::RenderWindow& window)
 {
 	window.draw(m_recShape);
