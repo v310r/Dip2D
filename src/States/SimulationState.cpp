@@ -47,26 +47,9 @@ void SimulationState::Deactivate()
 
 void SimulationState::Update(const float deltaTime)
 {
-	//m_physicsWorld->Step(deltaTime * 5.0f);
-	//m_physicsWorld->ResolveCollisions(deltaTime * 5.0f);
-
 	m_physicsWorld->Step(deltaTime);
-	m_physicsWorld->ResolveCollisions(deltaTime);
 
-	std::cout << "Objects num: " << m_objects.size() << "\n";
-	for (auto it = m_objects.begin(); it != m_objects.end();)
-	{
-		if ((*it)->GetPosition().y >= 2000.0f)
-		{
-			Object* temp = *it;
-			it = m_objects.erase(it);
-			delete temp;
-		}
-		else
-		{
-			it++;
-		}
-	}
+	DestroyIrrelevantObjects();
 }
 
 void SimulationState::Draw()
@@ -85,6 +68,25 @@ void SimulationState::GoToMainMenu(EventDetails* details)
 void SimulationState::Pause(EventDetails* details)
 {
 	m_stateManager->SwitchTo(StateType::Paused);
+}
+
+void SimulationState::DestroyIrrelevantObjects()
+{
+	std::cout << "Objects num: " << m_objects.size() << "\n";
+	for (auto it = m_objects.begin(); it != m_objects.end();)
+	{
+		// object has fallen too deep
+		if ((*it)->GetPosition().y >= 2000.0f)
+		{
+			Object* temp = *it;
+			it = m_objects.erase(it);
+			delete temp;
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 void SimulationState::SpawnObjectAtMousePosition(EventDetails* details)

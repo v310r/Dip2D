@@ -23,11 +23,15 @@ public:
 
 	void Step(const float deltaTime);
 
-	void ResolveCollisions(const float deltaTime);
-
 private:
+	void ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime);
+
+	std::vector<Collision> DetectCollisions(const float deltaTime);
+
+	void SolveConstraints(const std::vector<Collision>& collisions, const float deltaTime);
+
+
 	const std::vector<Object*>& m_objectsRef;
-	
 	std::vector<SolverBase*> m_solvers;
 
 	const glm::vec2 m_gravity = { 0.0f, 198.1f };

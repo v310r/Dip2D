@@ -17,7 +17,10 @@ Circle::Circle(const glm::vec2 pos, const float r) : Object(pos)
 
 void Circle::AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse)
 {
-
+	//const glm::vec2 centerOfMass = m_position;
+	//const glm::vec2 torque = glm::cross(point - centerOfMass, impulse);
+	//const glm::vec2 angularAcceleration = torque * GetInvInertia();
+	//m_angularVelocity += angularAcceleration;
 }
 
 void Circle::Draw(sf::RenderWindow& window)

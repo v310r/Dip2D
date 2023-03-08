@@ -43,6 +43,14 @@ void PhysicsWorld::Step(const float deltaTime)
 		return;
 	}
 
+	ApplyForcesAndUpdatePositionAndVelocity(deltaTime);
+
+	const std::vector<Collision> collisions = DetectCollisions(deltaTime);
+	SolveConstraints(collisions, deltaTime);
+}
+
+void PhysicsWorld::ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime)
+{
 	const float damping = 0.98f; // simulates air friction
 	for (Object* const obj : m_objectsRef)
 	{
@@ -56,6 +64,7 @@ void PhysicsWorld::Step(const float deltaTime)
 
 		const glm::vec2 acceleration = obj->GetNetForce() * obj->GetInvMass();
 		obj->AddVelocity(acceleration * deltaTime);
+
 		//obj->ApplyLinearDamping(damping);
 		const glm::vec2 offset = obj->GetVelocity() * deltaTime;
 		obj->AddToPosition(offset);
@@ -64,7 +73,7 @@ void PhysicsWorld::Step(const float deltaTime)
 	}
 }
 
-void PhysicsWorld::ResolveCollisions(const float deltaTime)
+std::vector<Collision> PhysicsWorld::DetectCollisions(const float deltaTime)
 {
 	std::vector<Collision> collisions;
 	for (Object* const a : m_objectsRef)
@@ -89,6 +98,11 @@ void PhysicsWorld::ResolveCollisions(const float deltaTime)
 		}
 	}
 
+	return collisions;
+}
+
+void PhysicsWorld::SolveConstraints(const std::vector<Collision>& collisions, const float deltaTime)
+{
 	for (SolverBase* solver : m_solvers)
 	{
 		solver->Solve(collisions, deltaTime);

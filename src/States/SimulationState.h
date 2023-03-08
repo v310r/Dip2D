@@ -17,14 +17,20 @@ public:
 	virtual void Deactivate() override;
 
 	virtual void Update(const float deltaTime) override;
+
+
 	virtual void Draw() override;
 
+
+
+private:
 	void GoToMainMenu(EventDetails* details);
 	void Pause(EventDetails* details);
 
+	void DestroyIrrelevantObjects();
+
 	void SpawnObjectAtMousePosition(EventDetails* details);
 
-private:
 
 	std::unique_ptr<PhysicsWorld> m_physicsWorld;
 
