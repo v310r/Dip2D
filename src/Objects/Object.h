@@ -13,10 +13,20 @@ public:
 
 	void AddToPosition(const glm::vec2 position);
 
+	void SetRotation(const float rotation);
+	float GetRotation() { return m_rotation; }
+
+	void AddtoRotation(const float rotation);
+
+
 	void SetVelocity(const glm::vec2 velocity) { m_velocity = velocity; }
 	glm::vec2 GetVelocity() { return m_velocity; }
 
+	void SetAngularVelocity(const glm::vec2 angularVelocity) { m_angularVelocity = angularVelocity; }
+	glm::vec2 GetAngularVelocity() { return m_angularVelocity; }
+
 	void AddVelocity(const glm::vec2 velocity) { m_velocity += velocity; }
+	void AddAngularVelocity(const glm::vec2 angularVelocity) { m_angularVelocity += angularVelocity; }
 
 	void ApplyLinearDamping(const float damping) { m_velocity *= damping; }
 
@@ -27,9 +37,9 @@ public:
 
 	void SetMass(const float mass) { m_mass = mass; }
 	float GetMass() { return m_mass; }
-
 	float GetInvMass();
 
+	float GetInertia() { return m_inertia; }
 	float GetInvInertia();
 
 	void AddLinearImpulse(const glm::vec2 impulse) { m_velocity += impulse; }
@@ -61,6 +71,7 @@ protected:
 	bool m_isStatic = false;
 
 	glm::vec2 m_position{};
+	float m_rotation{};
 	glm::vec2 m_velocity{};
 	glm::vec2 m_angularVelocity{};
 	glm::vec2 m_netForce{};

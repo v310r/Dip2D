@@ -72,7 +72,7 @@ void SimulationState::Pause(EventDetails* details)
 
 void SimulationState::DestroyIrrelevantObjects()
 {
-	std::cout << "Objects num: " << m_objects.size() << "\n";
+	//std::cout << "Objects num: " << m_objects.size() << "\n";
 	for (auto it = m_objects.begin(); it != m_objects.end();)
 	{
 		// object has fallen too deep
