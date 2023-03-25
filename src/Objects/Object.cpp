@@ -1,4 +1,5 @@
 #include "Object.h"
+#include <iostream>
 
 
 Object::Object(const glm::vec2 position) : m_position(position), m_rotation(0.0f)
@@ -29,7 +30,9 @@ void Object::SetRotation(const float rotation)
 void Object::AddtoRotation(const float rotation)
 {
 	m_rotation += rotation;
+	std::cout << m_rotation << "\n";
 	m_sprite.setRotation(m_rotation);
+	//m_sprite.rotate(m_rotation);
 }
 
 float Object::GetInvMass()

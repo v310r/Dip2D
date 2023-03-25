@@ -13,6 +13,8 @@ Circle::Circle(const glm::vec2 pos, const float r) : Object(pos)
 
 
 	m_inertia = m_mass * radius * radius / 2.0f;
+
+	int x = 5;
 }
 
 void Circle::AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse)

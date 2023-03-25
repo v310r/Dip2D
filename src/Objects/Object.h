@@ -22,11 +22,11 @@ public:
 	void SetVelocity(const glm::vec2 velocity) { m_velocity = velocity; }
 	glm::vec2 GetVelocity() { return m_velocity; }
 
-	void SetAngularVelocity(const glm::vec2 angularVelocity) { m_angularVelocity = angularVelocity; }
-	glm::vec2 GetAngularVelocity() { return m_angularVelocity; }
+	void SetAngularVelocity(const float angularVelocity) { m_angularVelocity = angularVelocity; }
+	float GetAngularVelocity() { return m_angularVelocity; }
 
 	void AddVelocity(const glm::vec2 velocity) { m_velocity += velocity; }
-	void AddAngularVelocity(const glm::vec2 angularVelocity) { m_angularVelocity += angularVelocity; }
+	void AddAngularVelocity(const float angularVelocity) { m_angularVelocity += angularVelocity; }
 
 	void ApplyLinearDamping(const float damping) { m_velocity *= damping; }
 
@@ -73,7 +73,7 @@ protected:
 	glm::vec2 m_position{};
 	float m_rotation{};
 	glm::vec2 m_velocity{};
-	glm::vec2 m_angularVelocity{};
+	float m_angularVelocity{};
 	glm::vec2 m_netForce{};
 	glm::vec2 m_netTorque{};
 	float m_mass = 1.0f;
