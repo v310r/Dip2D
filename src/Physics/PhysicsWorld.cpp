@@ -1,4 +1,6 @@
 #include "PhysicsWorld.h"
+#include "../Objects/Circle.h"
+#include <iterator>
 #include "iostream"
 #include <cmath>
 //#include "../Utility/Math.h"
@@ -86,8 +88,43 @@ void PhysicsWorld::ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime
 std::vector<Collision> PhysicsWorld::DetectCollisions(const float deltaTime)
 {
 	std::vector<Collision> collisions;
+
+	//for (auto a = m_objectsRef.begin(); a != m_objectsRef.end(); a++)
+	//{
+	//	if (!(*a)->GetCollider())
+	//	{
+	//		continue;
+	//	}
+
+	//	for (auto b = a + 1; b != m_objectsRef.end(); b++)
+	//	{
+	//		if (!(*b)->GetCollider())
+	//		{
+	//			continue; // no collider present
+	//		}
+
+	//		if ((*a)->IsStatic() && (*b)->IsStatic())
+	//		{
+	//			continue;
+	//		}
+
+	//		CollisionManifold manifold = (*a)->GetCollider()->Collides(*(*b)->GetCollider());
+	//		if (manifold.IsColliding)
+	//		{
+	//			Object* aObj = static_cast<Object*>(*a);
+	//			Object* bObj = static_cast<Object*>(*b);
+	//			collisions.emplace_back(Collision{ aObj, bObj, manifold });
+	//		}
+	//	}
+	//}
+
 	for (Object* const a : m_objectsRef)
 	{
+		if (!a->GetCollider())
+		{
+			continue;
+		}
+
 		for (Object* const b : m_objectsRef)
 		{
 			if (a == b)
@@ -95,9 +132,24 @@ std::vector<Collision> PhysicsWorld::DetectCollisions(const float deltaTime)
 				break; // same object
 			}
 
-			if (!a->GetCollider() || !b->GetCollider())
+			if (!b->GetCollider())
 			{
 				continue; // no collider present
+			}
+
+			if (a->IsStatic() && b->IsStatic())
+			{
+				continue;
+			}
+
+			if (collisions.size() > 0)
+			{
+				int x = 5;
+			}
+
+			if (dynamic_cast<Circle*>(a) || dynamic_cast<Circle*>(b))
+			{
+				int x = 5;
 			}
 
 			CollisionManifold manifold = a->GetCollider()->Collides(*b->GetCollider());

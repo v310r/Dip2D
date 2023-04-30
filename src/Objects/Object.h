@@ -51,10 +51,10 @@ public:
 	float GetFriction() { return m_friction; }
 
 	void SetTexture(const sf::Texture texture) { m_texture = texture; }
-	sf::Sprite GetSprite() { return m_sprite; }
+	const sf::Sprite& GetSprite() const { return m_sprite; }
 
 	void SetCollider(Collider* collider) { m_collider.reset(collider); }
-	const Collider* const GetCollider() { return m_collider.get(); }
+	const Collider* const GetCollider() const { return m_collider.get(); }
 
 	void SetDynamic(const bool value) { m_isStatic = !value; }
 

@@ -3,9 +3,9 @@
 #include "SFML/Graphics/Color.hpp"
 
 
-Rectangle::Rectangle(const glm::vec2 position) : Object(position)
+Rectangle::Rectangle(const glm::vec2 position, const glm::vec2 size) : Object(position)
 {
-	m_recShape.setSize({ 300.0f, 40.0f });
+	m_recShape.setSize({ size.x, size.y });
 	m_recShape.setOrigin(m_recShape.getSize().x / 2.0f, m_recShape.getSize().y / 2.0f);
 	m_recShape.setPosition(position.x, position.y);
 	m_recShape.setFillColor(sf::Color::Magenta);

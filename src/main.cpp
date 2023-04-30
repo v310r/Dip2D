@@ -16,6 +16,8 @@ int main()
         app->Update(deltaTime.asSeconds());
         app->Render();
         app->PostUpdate();
+
+        std::cout << "ms: " << (deltaTime.asSeconds() * 1000.0f) << "\n";
     }
 }
 

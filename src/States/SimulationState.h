@@ -31,10 +31,15 @@ private:
 
 	void SpawnObjectAtMousePosition(EventDetails* details);
 
+	void BeginSpawning(EventDetails* details);
+	void FinishSpawning(EventDetails* details);
+
 
 	std::unique_ptr<PhysicsWorld> m_physicsWorld;
 
 	std::vector<Object*> m_objects;
+
+	bool bSpawning = false;
 
 };
 

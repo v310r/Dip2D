@@ -17,8 +17,8 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 			continue;
 		}
 
-		const glm::vec2 velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
-		const glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+		glm::vec2 velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+		glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
 
 		const glm::vec2 rA = collision.Manifold.contacts[0] - collision.A->GetPosition();
 		const glm::vec2 rB = collision.Manifold.contacts[0] - collision.B->GetPosition();
@@ -33,7 +33,7 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 										   (velocityA + Math::Cross2D(angularVelocityA, rA));
 
 		const glm::vec2 relativeNormal = collision.Manifold.normal;
-		const float directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
+		float directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
 		if (directionMagnitude <= 0.0f)
 		{
 			continue; // Moving away from each other? Do nothing!
@@ -68,10 +68,13 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 			collision.B->AddAngularVelocity(Math::Cross2D(rB, impulse) * inverseInertiaB);
 		}
 
-		relativeVelocity = (velocityB + Math::Cross2D(angularVelocityB, rB)) -
-			(velocityA + Math::Cross2D(angularVelocityA, rA));
-
 		//Friction
+		velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+		velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+
+		relativeVelocity = (velocityB + Math::Cross2D(angularVelocityB, rB)) - (velocityA + Math::Cross2D(angularVelocityA, rA));
+		directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
+
 		const glm::vec2 t = relativeVelocity - (relativeNormal * directionMagnitude);
 		if (CMP(glm::length(t), 0.0f))
 		{
