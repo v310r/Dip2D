@@ -6,7 +6,7 @@
 class Rectangle : public Object
 {
 public:
-	Rectangle(const glm::vec2 position);
+	Rectangle(const glm::vec2 position, const glm::vec2 size = { 300.0f, 40.0f });
 
 	virtual void AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse) override;
 

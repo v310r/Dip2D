@@ -5,6 +5,7 @@
 #include "../Physics/ImpulseSolver.h"
 #include "../Physics/PositionSolver.h"
 #include <iostream>
+#include <SFML/System/Vector2.hpp>
 
 
 void SimulationState::OnCreate()
@@ -12,14 +13,21 @@ void SimulationState::OnCreate()
 	EventManager* const eManager = m_stateManager->GetContext()->GetEventManager();
 	eManager->AddCallback(StateType::Simulation, "Key_Escape", &SimulationState::GoToMainMenu, this);
 	eManager->AddCallback(StateType::Simulation, "Key_P", &SimulationState::Pause, this);
-	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::SpawnObjectAtMousePosition, this);
+	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::BeginSpawning, this);
+	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonReleased", &SimulationState::FinishSpawning, this);
+
+	//eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::SpawnObjectAtMousePosition, this);
 
 	m_physicsWorld = std::make_unique<PhysicsWorld>(m_objects);
 	m_physicsWorld->AddSolver(new ImpulseSolver());
 	m_physicsWorld->AddSolver(new PositionSolver());
 
-	m_objects.push_back(new Rectangle({300, 400}));
+	m_objects.push_back(new Rectangle({ 0, 300 }, {40, 800}));
+	m_objects.push_back(new Rectangle({ 400, 600 }, { 800, 40 }));
+	m_objects.push_back(new Rectangle({ 800, 300 }, { 40, 800 }));
 	m_objects[0]->SetDynamic(false);
+	m_objects[1]->SetDynamic(false);
+	m_objects[2]->SetDynamic(false);
 
 	
 }
@@ -49,6 +57,21 @@ void SimulationState::Update(const float deltaTime)
 {
 	m_physicsWorld->Step(deltaTime);
 
+	if (bSpawning)
+	{
+		sf::RenderWindow* const window = m_stateManager->GetContext()->GetWindow()->GetRenderWindow();
+		if (window)
+		{
+			sf::Vector2i mousePos = m_mouse.getPosition(*window);
+			if (m_objects.size() <= 103)
+			{
+				m_objects.push_back(new Circle({ mousePos.x, mousePos.y }, 10.0f));
+			}
+		}
+	}
+
+	//m_objects.push_back(new Circle(glm::vec2(300.0f, 10.0f), 10.0f));
+
 	DestroyIrrelevantObjects();
 }
 
@@ -72,9 +95,15 @@ void SimulationState::Pause(EventDetails* details)
 
 void SimulationState::DestroyIrrelevantObjects()
 {
-	std::cout << "Objects num: " << m_objects.size() << "\n";
+	//std::cout << "Objects num: " << m_objects.size() << "\n";
 	for (auto it = m_objects.begin(); it != m_objects.end();)
 	{
+		if (Rectangle* rec = dynamic_cast<Rectangle*>(*it))
+		{
+			it++;
+			continue;
+		}
+
 		// object has fallen too deep
 		if ((*it)->GetPosition().y >= 2000.0f)
 		{
@@ -94,4 +123,14 @@ void SimulationState::SpawnObjectAtMousePosition(EventDetails* details)
 	glm::vec2 mousePos = details->GetMousePos();
 
 	m_objects.push_back(new Circle(mousePos, 10.0f));
+}
+
+void SimulationState::BeginSpawning(EventDetails* details)
+{
+	bSpawning = true;
+}
+
+void SimulationState::FinishSpawning(EventDetails* details)
+{
+	bSpawning = false;
 }

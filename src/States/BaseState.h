@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+
 #include "../Events/EventManager.h"
 #include "glm/glm.hpp"
 
@@ -63,4 +64,6 @@ protected:
 	StateManager* m_stateManager;
 	bool m_transparent;
 	bool m_transcendent;
+
+	static sf::Mouse m_mouse;
 };

@@ -15,12 +15,12 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 			continue;
 		}
 
-		const glm::vec2 velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
-		const glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+		glm::vec2 velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+		glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
 
-		const glm::vec2 relativeVelocity = velocityB - velocityA;
-		const glm::vec2 relativeNormal = collision.Manifold.normal;
-		const float directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
+		glm::vec2 relativeVelocity = velocityB - velocityA;
+		glm::vec2 relativeNormal = collision.Manifold.normal;
+		float directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
 		if (directionMagnitude <= 0.0f)
 		{
 			continue; // Moving away from each other? Do nothing!
@@ -47,7 +47,12 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 
 		//Friction
 		
-		//const glm::vec2 t = glm::dot(relativeVelocity, relativeNormal);
+		velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+		velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+
+		relativeVelocity = velocityB - velocityA;
+		relativeNormal = collision.Manifold.normal;
+		directionMagnitude = glm::dot(relativeVelocity, relativeNormal);
 
 		const glm::vec2 t = relativeVelocity - (relativeNormal * directionMagnitude);
 		if (CMP(glm::length(t), 0.0f))
