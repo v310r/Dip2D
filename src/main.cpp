@@ -14,10 +14,11 @@ int main()
     {
         const sf::Time deltaTime = app->RestartClock();
         app->Update(deltaTime.asSeconds());
+        std::cout << "ms Update: " << (app->GetElapsedTime().asSeconds() * 1000.0f) << "\n";
         app->Render();
+        std::cout << "ms Render: " << (app->GetElapsedTime().asSeconds() * 1000.0f) << "\n";
         app->PostUpdate();
 
-        std::cout << "ms: " << (deltaTime.asSeconds() * 1000.0f) << "\n";
     }
 }
 

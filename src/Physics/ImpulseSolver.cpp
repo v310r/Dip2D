@@ -2,6 +2,10 @@
 #include "../Objects/Object.h"
 #include "../Collision/CollisionUtility.h"
 #include <cmath>
+//#include <mutex>
+
+
+//static std::mutex impulseMutex;
 
 void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
 {
@@ -15,8 +19,22 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 			continue;
 		}
 
-		glm::vec2 velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
-		glm::vec2 velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+		glm::vec2 velocityA;
+		glm::vec2 velocityB;
+
+		{
+			//std::unique_lock lock(impulseMutex);
+
+			{
+				std::unique_lock lock(collision.A->internalMutex);
+				velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+			}
+
+			{
+				std::unique_lock lock(collision.B->internalMutex);
+				velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+			}
+		}
 
 		glm::vec2 relativeVelocity = velocityB - velocityA;
 		glm::vec2 relativeNormal = collision.Manifold.normal;
@@ -36,19 +54,37 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 
 		// Linear Impulse
 		const glm::vec2 impulse = relativeNormal * j;
-		if (collision.A->IsDynamic())
+
 		{
-			collision.A->AddVelocity(-impulse * invMassA);
-		}
-		if (collision.B->IsDynamic())
-		{
-			collision.B->AddVelocity(impulse * invMassB);
+			//std::unique_lock lock(impulseMutex);
+
+			if (collision.A->IsDynamic())
+			{
+				std::unique_lock lock(collision.A->internalMutex);
+				collision.A->AddVelocity(-impulse * invMassA);
+			}
+
+			if (collision.B->IsDynamic())
+			{
+				std::unique_lock lock(collision.B->internalMutex);
+				collision.B->AddVelocity(impulse * invMassB);
+			}
 		}
 
 		//Friction
-		
-		velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
-		velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+		{
+			//std::unique_lock lock(impulseMutex);
+
+			{
+				std::unique_lock lock(collision.A->internalMutex);
+				velocityA = (collision.A->IsDynamic() ? collision.A->GetVelocity() : glm::vec2());
+			}
+
+			{
+				std::unique_lock lock(collision.B->internalMutex);
+				velocityB = (collision.B->IsDynamic() ? collision.B->GetVelocity() : glm::vec2());
+			}
+		}
 
 		relativeVelocity = velocityB - velocityA;
 		relativeNormal = collision.Manifold.normal;
@@ -84,13 +120,21 @@ void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaT
 		}
 
 		const glm::vec2 tangentImpulse = tNormalized * jt;
-		if (collision.A->IsDynamic())
+
 		{
-			collision.A->AddVelocity(tangentImpulse * invMassA);
-		}
-		if (collision.B->IsDynamic())
-		{
-			collision.B->AddVelocity(-tangentImpulse * invMassB);
+			//std::unique_lock lock(impulseMutex);
+
+			if (collision.A->IsDynamic())
+			{
+				std::unique_lock lock(collision.A->internalMutex);
+				collision.A->AddVelocity(tangentImpulse * invMassA);
+			}
+
+			if (collision.B->IsDynamic())
+			{
+				std::unique_lock lock(collision.B->internalMutex);
+				collision.B->AddVelocity(-tangentImpulse * invMassB);
+			}
 		}
 	}
 }

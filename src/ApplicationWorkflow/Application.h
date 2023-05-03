@@ -24,6 +24,8 @@ public:
 
 	sf::Time RestartClock();
 
+	sf::Time GetElapsedTime();
+
 private:
 
 	Window m_window;

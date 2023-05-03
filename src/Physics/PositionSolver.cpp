@@ -1,6 +1,8 @@
 #include "PositionSolver.h"
 #include "../Objects/Object.h"
+//#include <mutex>
 
+//static std::mutex positionMutex;
 
 void PositionSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
 {
@@ -27,14 +29,19 @@ void PositionSolver::Solve(const std::vector<Collision>& collisions, float delta
 		const float scalar = depth / invMassSum;
 		const glm::vec2 correction = collision.Manifold.normal * scalar * LinearProjectionPercent;
 
-		if (collision.A->IsDynamic())
 		{
-			collision.A->AddToPosition(correction * invMassA);
-		}
+			//std::unique_lock lock(positionMutex);
+			if (collision.A->IsDynamic())
+			{
+				std::unique_lock lock(collision.A->internalMutex);
+				collision.A->AddToPosition(correction * invMassA);
+			}
 
-		if (collision.B->IsDynamic())
-		{
-			collision.B->AddToPosition(-correction * invMassB);
+			if (collision.B->IsDynamic())
+			{
+				std::unique_lock lock(collision.B->internalMutex);
+				collision.B->AddToPosition(-correction * invMassB);
+			}
 		}
 	}
 }

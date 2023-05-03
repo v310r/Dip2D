@@ -13,10 +13,10 @@ void SimulationState::OnCreate()
 	EventManager* const eManager = m_stateManager->GetContext()->GetEventManager();
 	eManager->AddCallback(StateType::Simulation, "Key_Escape", &SimulationState::GoToMainMenu, this);
 	eManager->AddCallback(StateType::Simulation, "Key_P", &SimulationState::Pause, this);
-	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::BeginSpawning, this);
-	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonReleased", &SimulationState::FinishSpawning, this);
+	//eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::BeginSpawning, this);
+	//eManager->AddCallback(StateType::Simulation, "LeftMouseButtonReleased", &SimulationState::FinishSpawning, this);
 
-	//eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::SpawnObjectAtMousePosition, this);
+	eManager->AddCallback(StateType::Simulation, "LeftMouseButtonClick", &SimulationState::SpawnObjectAtMousePosition, this);
 
 	m_physicsWorld = std::make_unique<PhysicsWorld>(m_objects);
 	m_physicsWorld->AddSolver(new ImpulseSolver());
@@ -28,6 +28,11 @@ void SimulationState::OnCreate()
 	m_objects[0]->SetDynamic(false);
 	m_objects[1]->SetDynamic(false);
 	m_objects[2]->SetDynamic(false);
+
+	for (size_t i = 0; i < 1000; ++i)
+	{
+		m_objects.push_back(new Circle({ 0.0f, 0.0f }, 10.0f));
+	}
 
 	
 }
@@ -63,7 +68,7 @@ void SimulationState::Update(const float deltaTime)
 		if (window)
 		{
 			sf::Vector2i mousePos = m_mouse.getPosition(*window);
-			if (m_objects.size() <= 103)
+			if (m_objects.size() <= 203)
 			{
 				m_objects.push_back(new Circle({ mousePos.x, mousePos.y }, 10.0f));
 			}
@@ -72,7 +77,7 @@ void SimulationState::Update(const float deltaTime)
 
 	//m_objects.push_back(new Circle(glm::vec2(300.0f, 10.0f), 10.0f));
 
-	DestroyIrrelevantObjects();
+	//DestroyIrrelevantObjects();
 }
 
 void SimulationState::Draw()

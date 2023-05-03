@@ -46,3 +46,8 @@ sf::Time Application::RestartClock()
 {
 	return m_clock.restart();
 }
+
+sf::Time Application::GetElapsedTime()
+{
+	return m_clock.getElapsedTime();
+}

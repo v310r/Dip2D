@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../Collision/Collider.h"
+#include <mutex>
+
 
 class Object
 {
@@ -40,7 +42,7 @@ public:
 
 	float GetFriction() { return m_friction; }
 
-	void SetTexture(const sf::Texture texture) { m_texture = texture; }
+	//void SetTexture(const sf::Texture texture) { m_texture = texture; }
 	const sf::Sprite& GetSprite() const { return m_sprite; }
 
 	void SetCollider(Collider* collider) { m_collider.reset(collider); }
@@ -53,9 +55,10 @@ public:
 
 	virtual void Draw(sf::RenderWindow& window) = 0;
 
+	std::mutex internalMutex;
+
 protected:
 	sf::Sprite m_sprite;
-	sf::Texture m_texture;
 	std::unique_ptr<Collider> m_collider = nullptr;
 
 	bool m_isStatic = false;

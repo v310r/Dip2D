@@ -11,6 +11,7 @@ public:
 
 	PhysicsWorld(const std::vector<Object*>& objects) : m_objectsRef(objects)
 	{
+		m_collisions.reserve(10000);
 	}
 
 	~PhysicsWorld();
@@ -26,7 +27,11 @@ public:
 private:
 	void ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime);
 
-	std::vector<Collision> DetectCollisions(const float deltaTime);
+	void DetectCollisions();
+
+	void DetectCollisionsForTests();
+
+	void DetectCollisionsParallelForTests(size_t startIndex, size_t endIndex);
 
 	void SolveConstraints(const std::vector<Collision>& collisions, const float deltaTime);
 
@@ -35,6 +40,8 @@ private:
 	std::vector<SolverBase*> m_solvers;
 
 	const glm::vec2 m_gravity = { 0.0f, 198.1f };
+
+	std::vector<Collision> m_collisions;
 
 	//sf::Clock m_SimulationTime;
 };
