@@ -6,7 +6,11 @@
 #include <functional>
 
 
-static BS::thread_pool threadPool(std::thread::hardware_concurrency() / 4.0f);
+static BS::thread_pool threadPool(3);
+
+//static BS::thread_pool threadPool(8);
+
+//static BS::thread_pool threadPool(std::thread::hardware_concurrency());
 
 static std::mutex collisionMutex;
 
@@ -54,55 +58,15 @@ void PhysicsWorld::Step(const float deltaTime)
 
 	ApplyForcesAndUpdatePositionAndVelocity(deltaTime);
 
-	//DetectCollisions();
+	DetectCollisionsForDemo();
 
 	//DetectCollisionsForTests();
 
-	const size_t numberOfThreads = threadPool.get_thread_count();
-	const size_t step = m_objectsRef.size() / numberOfThreads;
-	size_t startIndex = 0;
-	for (size_t i = 0; i < numberOfThreads; ++i)
-	{
-		size_t endIndex = ((i == (numberOfThreads - 1)) ? m_objectsRef.size() : startIndex + step);
-		threadPool.push_task(&PhysicsWorld::DetectCollisionsParallelForTests, this, startIndex, endIndex);
-		startIndex += step;
-	}
-
-	threadPool.wait_for_tasks();
+	//DetectCollisionsParallelForTests();
 
 	SolveConstraints(m_collisions, deltaTime);
 
-	//if (m_collisions.size() > 1000)
-	//{
-	//	int x = 5;
-	//}
-
-	//int blockSize = std::thread::hardware_concurrency();
-	//int elementsPerThread = m_collisions.size() / blockSize;
-
-
-	//if (elementsPerThread == 0)
-	//{
-	//	SolveConstraints(m_collisions, deltaTime);
-	//	return;
-	//}
-
-	//// multithreaded approach
-	//std::vector<std::vector<Collision>> collisionBuckets;
-	//for (size_t i = 0; i < m_collisions.size(); i += elementsPerThread) 
-	//{
-	//	auto first = m_collisions.begin() + i;
-	//	auto last = (i + elementsPerThread < m_collisions.size()) ? first + elementsPerThread : m_collisions.end();
-
-	//	collisionBuckets.emplace_back(first, last);
-	//}
-
-	//for (int i = 0; i < collisionBuckets.size(); ++i)
-	//{
-	//	threadPool.push_task(&PhysicsWorld::SolveConstraints, this, collisionBuckets[i], deltaTime);
-	//}
-
-	//threadPool.wait_for_tasks();
+	//SolveConstraintsParallel(deltaTime);
 
 	m_collisions.clear();
 }
@@ -118,7 +82,7 @@ void PhysicsWorld::ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime
 		}
 
 		//std::cout << "obj position y: " << obj->GetPosition().y << " time spent: " << m_SimulationTime.getElapsedTime().asSeconds() << "s\n";
-		//obj->AddToNetForce(obj->GetMass() * m_gravity); // gravity force component
+		obj->AddToNetForce(obj->GetMass() * m_gravity); // gravity force component
 
 		const glm::vec2 acceleration = obj->GetNetForce() * obj->GetInvMass();
 		obj->AddVelocity(acceleration * deltaTime);
@@ -131,7 +95,7 @@ void PhysicsWorld::ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime
 	}
 }
 
-void PhysicsWorld::DetectCollisions()
+void PhysicsWorld::DetectCollisionsForDemo()
 {
 	//std::vector<Collision> collisions;
 
@@ -200,7 +164,7 @@ void PhysicsWorld::DetectCollisionsForTests()
 	}
 }
 
-void PhysicsWorld::DetectCollisionsParallelForTests(size_t startIndex, size_t endIndex)
+void PhysicsWorld::DetectCollisionsForThread(size_t startIndex, size_t endIndex)
 {
 	for (size_t i = startIndex; i < endIndex; ++i)
 	{
@@ -231,10 +195,52 @@ void PhysicsWorld::DetectCollisionsParallelForTests(size_t startIndex, size_t en
 	}
 }
 
+void PhysicsWorld::DetectCollisionsParallelForTests()
+{
+	const size_t numberOfThreads = threadPool.get_thread_count();
+	const size_t step = m_objectsRef.size() / numberOfThreads;
+	size_t startIndex = 0;
+	for (size_t i = 0; i < numberOfThreads; ++i)
+	{
+		size_t endIndex = ((i == (numberOfThreads - 1)) ? m_objectsRef.size() : startIndex + step);
+		threadPool.push_task(&PhysicsWorld::DetectCollisionsForThread, this, startIndex, endIndex);
+		startIndex += step;
+	}
+
+	threadPool.wait_for_tasks();
+}
+
 void PhysicsWorld::SolveConstraints(const std::vector<Collision>& collisions, const float deltaTime)
 {
 	for (SolverBase* solver : m_solvers)
 	{
 		solver->Solve(collisions, deltaTime);
 	}
+}
+
+void PhysicsWorld::SolveConstraintsParallel(float deltaTime)
+{
+	const int blockSize = std::thread::hardware_concurrency();
+	const int elementsPerThread = m_collisions.size() / blockSize;
+	if (elementsPerThread == 0)
+	{
+		SolveConstraints(m_collisions, deltaTime);
+		return;
+	}
+
+	std::vector<std::vector<Collision>> collisionBuckets;
+	for (size_t i = 0; i < m_collisions.size(); i += elementsPerThread) 
+	{
+		auto first = m_collisions.begin() + i;
+		auto last = (i + elementsPerThread < m_collisions.size()) ? first + elementsPerThread : m_collisions.end();
+
+		collisionBuckets.emplace_back(first, last);
+	}
+
+	for (int i = 0; i < collisionBuckets.size(); ++i)
+	{
+		threadPool.push_task(&PhysicsWorld::SolveConstraints, this, collisionBuckets[i], deltaTime);
+	}
+
+	threadPool.wait_for_tasks();
 }

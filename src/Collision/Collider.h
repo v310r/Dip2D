@@ -2,6 +2,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "CollisionManifold.h"
+#include <atomic>
 
 class RectangleCollider;
 class CircleCollider;

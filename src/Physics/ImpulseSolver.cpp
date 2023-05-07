@@ -2,10 +2,7 @@
 #include "../Objects/Object.h"
 #include "../Collision/CollisionUtility.h"
 #include <cmath>
-//#include <mutex>
 
-
-//static std::mutex impulseMutex;
 
 void ImpulseSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
 {

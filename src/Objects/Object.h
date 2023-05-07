@@ -2,6 +2,7 @@
 
 #include "../Collision/Collider.h"
 #include <mutex>
+#include <atomic>
 
 
 class Object
@@ -11,14 +12,14 @@ public:
 	Object(const glm::vec2 position);
 
 	void SetPosition(const glm::vec2 position);
-	glm::vec2 GetPosition() { return m_position; }
+	glm::vec2 GetPosition();
 
 	void AddToPosition(const glm::vec2 position);
 
-	void SetVelocity(const glm::vec2 velocity) { m_velocity = velocity; }
-	glm::vec2 GetVelocity() { return m_velocity; }
+	void SetVelocity(const glm::vec2 velocity);
+	glm::vec2 GetVelocity();
 
-	void AddVelocity(const glm::vec2 velocity) { m_velocity += velocity; }
+	void AddVelocity(const glm::vec2 velocity);
 
 	void ApplyLinearDamping(const float damping) { m_velocity *= damping; }
 
@@ -65,6 +66,7 @@ protected:
 
 	glm::vec2 m_position{};
 	glm::vec2 m_velocity{};
+
 	glm::vec2 m_angularVelocity{};
 	glm::vec2 m_netForce{};
 	glm::vec2 m_netTorque{};

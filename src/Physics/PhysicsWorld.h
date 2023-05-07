@@ -27,14 +27,17 @@ public:
 private:
 	void ApplyForcesAndUpdatePositionAndVelocity(const float deltaTime);
 
-	void DetectCollisions();
+	void DetectCollisionsForDemo();
 
 	void DetectCollisionsForTests();
 
-	void DetectCollisionsParallelForTests(size_t startIndex, size_t endIndex);
+	void DetectCollisionsForThread(size_t startIndex, size_t endIndex);
+
+	void DetectCollisionsParallelForTests();
 
 	void SolveConstraints(const std::vector<Collision>& collisions, const float deltaTime);
 
+	void SolveConstraintsParallel(float deltaTime);
 
 	const std::vector<Object*>& m_objectsRef;
 	std::vector<SolverBase*> m_solvers;

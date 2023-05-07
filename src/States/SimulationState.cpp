@@ -8,6 +8,10 @@
 #include <SFML/System/Vector2.hpp>
 
 
+//static constexpr size_t NUMBER_OF_CIRCLES = 2000;
+
+static constexpr size_t NUMBER_OF_CIRCLES_FOR_CONTINUOUS_MOUSE_SPAWNING = 103;
+
 void SimulationState::OnCreate()
 {
 	EventManager* const eManager = m_stateManager->GetContext()->GetEventManager();
@@ -29,10 +33,10 @@ void SimulationState::OnCreate()
 	m_objects[1]->SetDynamic(false);
 	m_objects[2]->SetDynamic(false);
 
-	for (size_t i = 0; i < 1000; ++i)
-	{
-		m_objects.push_back(new Circle({ 0.0f, 0.0f }, 10.0f));
-	}
+	//for (size_t i = 0; i < NUMBER_OF_CIRCLES; ++i)
+	//{
+	//	m_objects.push_back(new Circle({ 0.0f, 0.0f }, 10.0f));
+	//}
 
 	
 }
@@ -68,9 +72,9 @@ void SimulationState::Update(const float deltaTime)
 		if (window)
 		{
 			sf::Vector2i mousePos = m_mouse.getPosition(*window);
-			if (m_objects.size() <= 203)
+			if (m_objects.size() <= NUMBER_OF_CIRCLES_FOR_CONTINUOUS_MOUSE_SPAWNING)
 			{
-				m_objects.push_back(new Circle({ mousePos.x, mousePos.y }, 10.0f));
+				m_objects.push_back(new Circle({ mousePos.x, mousePos.y }));
 			}
 		}
 	}

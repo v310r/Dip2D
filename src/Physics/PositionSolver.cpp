@@ -1,8 +1,6 @@
 #include "PositionSolver.h"
 #include "../Objects/Object.h"
-//#include <mutex>
 
-//static std::mutex positionMutex;
 
 void PositionSolver::Solve(const std::vector<Collision>& collisions, float deltaTime)
 {
@@ -30,7 +28,6 @@ void PositionSolver::Solve(const std::vector<Collision>& collisions, float delta
 		const glm::vec2 correction = collision.Manifold.normal * scalar * LinearProjectionPercent;
 
 		{
-			//std::unique_lock lock(positionMutex);
 			if (collision.A->IsDynamic())
 			{
 				std::unique_lock lock(collision.A->internalMutex);

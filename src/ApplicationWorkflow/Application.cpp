@@ -5,7 +5,7 @@ Application::Application() : m_window("Rigid body simulation", sf::Vector2u(800,
 {
 	m_context.SetWindow(&m_window);
 	m_context.SetEventManager(m_window.GetEventManager());
-	m_stateManager.SwitchTo(StateType::Simulation);
+	m_stateManager.SwitchTo(StateType::Intro);
 
 	//m_window.SetFramerateLimit(10);
 }

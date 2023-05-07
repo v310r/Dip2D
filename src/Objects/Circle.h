@@ -7,7 +7,7 @@ class Circle : public Object
 {
 
 public:
-	Circle(const glm::vec2 pos, const float r);
+	Circle(const glm::vec2 pos, const float r = 10.0f);
 
 	virtual void AddRotationalImpulse(const glm::vec2 point, const glm::vec2 impulse) override;
 
